@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">StatedLayout</string>
+
+    <string name="default_empty">No Data!</string>
+    <string name="default_loading">Loading ...</string>
+    <string name="default_error">Error! :(</string>
+    <string name="retry">Retry</string>
+</resources>

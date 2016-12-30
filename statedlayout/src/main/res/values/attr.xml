@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="StatedLayout">
+        <attr name="emptyLabel" format="reference"/>
+        <attr name="loadingLabel" format="reference"/>
+        <attr name="errorLabel" format="reference"/>
+
+        <attr name="emptyImage" format="reference"/>
+        <attr name="loadingImage" format="reference"/>
+        <attr name="errorImage" format="reference"/>
+    </declare-styleable>
+</resources>
