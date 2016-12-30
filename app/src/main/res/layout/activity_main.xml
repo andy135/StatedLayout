@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:andiag="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
@@ -13,39 +13,43 @@
 
 
     <LinearLayout
+        android:id="@+id/buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="1"
-        android:id="@+id/buttons">
+        android:weightSum="1">
+
         <Button
-            android:text="Loading"
-            android:layout_width="0dp"
-            android:layout_weight="0.25"
-            android:layout_height="wrap_content"
             android:id="@+id/buttonLoading"
-            style="?android:buttonBarButtonStyle"/>
-        <Button
-            android:text="Empty"
+            style="?android:buttonBarButtonStyle"
             android:layout_width="0dp"
-            android:layout_weight="0.25"
             android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:text="Loading" />
+
+        <Button
             android:id="@+id/buttonEmpty"
-            style="?android:buttonBarButtonStyle"/>
-        <Button
-            android:text="Error"
+            style="?android:buttonBarButtonStyle"
             android:layout_width="0dp"
-            android:layout_weight="0.25"
             android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:text="Empty" />
+
+        <Button
             android:id="@+id/buttonError"
-            style="?android:buttonBarButtonStyle"/>
-        <Button
-            android:text="Content"
+            style="?android:buttonBarButtonStyle"
             android:layout_width="0dp"
-            android:layout_weight="0.25"
             android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:text="Error" />
+
+        <Button
             android:id="@+id/buttonContent"
-            style="?android:buttonBarButtonStyle"/>
+            style="?android:buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:text="Content" />
     </LinearLayout>
 
 
@@ -54,10 +58,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/buttons"
-        custom:loadingImage="@android:drawable/ic_menu_camera"
-        custom:loadingLabel="@string/app_name">
+        andiag:loadingImage="@android:drawable/ic_menu_camera"
+        andiag:loadingLabel="@string/app_name"
+        android:textSize="32sp">
 
-        <include layout="@layout/content"/>
+        <include layout="@layout/content" />
 
     </com.andiag.statedlayout.StatedLayout>
 

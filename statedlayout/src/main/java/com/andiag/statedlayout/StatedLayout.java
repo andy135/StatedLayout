@@ -8,6 +8,7 @@ import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,8 @@ public class StatedLayout extends RelativeLayout {
     private ImageView image;
     private TextView text;
     private Button button;
+
+    private int textSize;
 
     @StringRes
     private int labelEmpty, labelLoading, labelError;
@@ -81,6 +84,8 @@ public class StatedLayout extends RelativeLayout {
             imageEmpty = array.getResourceId(R.styleable.StatedLayout_emptyImage,android.R.drawable.ic_input_add);
             imageLoading = array.getResourceId(R.styleable.StatedLayout_loadingImage,android.R.drawable.ic_menu_compass);
             imageError = array.getResourceId(R.styleable.StatedLayout_errorImage,android.R.drawable.ic_delete);
+
+            textSize = array.getDimensionPixelSize(R.styleable.StatedLayout_android_textSize,18);
         } finally {
             array.recycle();
         }
@@ -89,6 +94,7 @@ public class StatedLayout extends RelativeLayout {
 
         image = (ImageView) view.findViewById(R.id.statelayout_image);
         text = (TextView) view.findViewById(R.id.statelayout_text);
+        text.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
         button = (Button) view.findViewById(R.id.statelayout_button);
         content = (ViewGroup) view.findViewById(R.id.statedlayout_content);
     }
