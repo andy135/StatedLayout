@@ -59,6 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/buttons"
         android:textSize="32sp"
+        android:tint="@color/colorPrimary"
         andiag:alternateIcons="true">
 
         <include layout="@layout/content" />

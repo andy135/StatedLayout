@@ -3,6 +3,7 @@ package com.andiag.statedlayout;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
@@ -34,6 +35,7 @@ public class StatedLayout extends RelativeLayout {
     private Button button;
 
     private int textSize;
+    private int tintColor;
 
     @StringRes
     private int labelEmpty, labelLoading, labelError;
@@ -88,6 +90,8 @@ public class StatedLayout extends RelativeLayout {
 
             alternateIcons = array.getBoolean(R.styleable.StatedLayout_alternateIcons, false);
 
+            tintColor = array.getColor(R.styleable.StatedLayout_android_tint, getColor(context, R.attr.colorAccent));
+
             textSize = array.getDimensionPixelSize(R.styleable.StatedLayout_android_textSize,18);
         } finally {
             array.recycle();
@@ -102,10 +106,19 @@ public class StatedLayout extends RelativeLayout {
         View view = LayoutInflater.from(context).inflate(R.layout.statedlayout_base, this);
 
         image = (ImageView) view.findViewById(R.id.statelayout_image);
+        image.setColorFilter(tintColor, PorterDuff.Mode.MULTIPLY);
         text = (TextView) view.findViewById(R.id.statelayout_text);
         text.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
         button = (Button) view.findViewById(R.id.statelayout_button);
         content = (ViewGroup) view.findViewById(R.id.statedlayout_content);
+    }
+
+    private int getColor(Context context, int colorAttr) {
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[]{colorAttr});
+        int color = a.getColor(0, 0);
+        a.recycle();
+        return color;
     }
 
     @Override

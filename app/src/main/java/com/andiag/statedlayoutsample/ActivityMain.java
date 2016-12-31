@@ -1,7 +1,7 @@
 package com.andiag.statedlayoutsample;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -69,7 +69,7 @@ public class ActivityMain extends AppCompatActivity {
     private List<ItemContent> getSampleContent(){
         List<ItemContent> result = new ArrayList<>();
         for(int i = 0;i<50;i++){
-            result.add(new ItemContent(android.R.drawable.ic_dialog_email,"Item "+i));
+            result.add(new ItemContent(R.drawable.stated_empty_, "Item " + i));
         }
         return result;
     }

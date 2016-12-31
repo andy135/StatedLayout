@@ -19,14 +19,14 @@ public class AdapterContent extends RecyclerView.Adapter<AdapterContent.Holder> 
     private List<ItemContent> contentList;
     private Context context;
 
-    public void updateList(List<ItemContent> items){
-        this.contentList = items;
-        notifyDataSetChanged();
-    }
-
     public AdapterContent(Context context, List<ItemContent> contentList) {
         this.contentList = contentList;
         this.context = context;
+    }
+
+    public void updateList(List<ItemContent> items) {
+        this.contentList = items;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -41,7 +41,7 @@ public class AdapterContent extends RecyclerView.Adapter<AdapterContent.Holder> 
         ItemContent item = contentList.get(position);
 
         holder.textView.setText(item.getText());
-        holder.imageView.setBackgroundResource(item.getImage());
+        holder.imageView.setImageResource(item.getImage());
 
     }
 
