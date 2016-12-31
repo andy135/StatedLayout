@@ -3,7 +3,6 @@ package com.andiag.statedlayout;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
@@ -41,6 +40,8 @@ public class StatedLayout extends RelativeLayout {
 
     @DrawableRes
     private int imageEmpty, imageLoading, imageError;
+
+    private boolean alternateIcons;
 
     private ViewGroup content;
 
@@ -81,13 +82,21 @@ public class StatedLayout extends RelativeLayout {
             labelLoading = array.getResourceId(R.styleable.StatedLayout_loadingLabel,R.string.default_loading);
             labelError = array.getResourceId(R.styleable.StatedLayout_errorLabel,R.string.default_error);
 
-            imageEmpty = array.getResourceId(R.styleable.StatedLayout_emptyImage,android.R.drawable.ic_input_add);
-            imageLoading = array.getResourceId(R.styleable.StatedLayout_loadingImage,android.R.drawable.ic_menu_compass);
-            imageError = array.getResourceId(R.styleable.StatedLayout_errorImage,android.R.drawable.ic_delete);
+            imageEmpty = array.getResourceId(R.styleable.StatedLayout_emptyImage, R.drawable.stated_empty);
+            imageLoading = array.getResourceId(R.styleable.StatedLayout_loadingImage, R.drawable.stated_loading);
+            imageError = array.getResourceId(R.styleable.StatedLayout_errorImage, R.drawable.stated_error);
+
+            alternateIcons = array.getBoolean(R.styleable.StatedLayout_alternateIcons, false);
 
             textSize = array.getDimensionPixelSize(R.styleable.StatedLayout_android_textSize,18);
         } finally {
             array.recycle();
+        }
+
+        if (alternateIcons) {
+            imageEmpty = R.drawable.stated_empty_;
+            imageLoading = R.drawable.stated_loading_;
+            imageError = R.drawable.stated_error_;
         }
 
         View view = LayoutInflater.from(context).inflate(R.layout.statedlayout_base, this);

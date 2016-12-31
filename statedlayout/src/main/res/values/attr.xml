@@ -8,6 +8,8 @@
         <attr name="emptyImage" format="reference"/>
         <attr name="loadingImage" format="reference"/>
         <attr name="errorImage" format="reference"/>
+
+        <attr name="alternateIcons" format="boolean" />
         
         <attr name="android:textSize"/>
     </declare-styleable>

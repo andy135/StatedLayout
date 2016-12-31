@@ -9,27 +9,29 @@
         android:layout_height="150dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:tint="?colorAccent"
+        android:tintMode="multiply" />
 
     <TextView
         android:id="@+id/statelayout_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/statelayout_image"
-        android:layout_gravity="center"
         android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
         android:layout_marginTop="8dp"
         />
 
     <Button
         android:id="@+id/statelayout_button"
+        style="?android:buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/statelayout_text"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:layout_marginTop="16dp"
-        style="?android:buttonBarButtonStyle"/>
+        android:layout_marginTop="16dp" />
 
     <FrameLayout android:id="@+id/statedlayout_content"
         android:layout_width="wrap_content"
