@@ -27,24 +27,18 @@ public class StatedLayout extends RelativeLayout {
     public static final int STATE_LOADING  = 20;
     public static final int STATE_ERROR    = 30;
     public static final int STATE_EMPTY    = 40;
-
     private int actualState = STATE_LOADING;
-
     private ImageView image;
     private TextView text;
     private Button button;
-
     private int textSize;
     private int tintColor;
-
+    private OnRetryClickListener retryClickListener;
     @StringRes
     private int labelEmpty, labelLoading, labelError;
-
     @DrawableRes
     private int imageEmpty, imageLoading, imageError;
-
     private boolean alternateIcons;
-
     private ViewGroup content;
 
     public StatedLayout(Context context) {
@@ -66,14 +60,6 @@ public class StatedLayout extends RelativeLayout {
     public StatedLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         initViews(context,attrs,defStyleAttr);
-    }
-
-    public int getActualState() {
-        return actualState;
-    }
-
-    public void setActualState(int actualState) {
-        this.actualState = actualState;
     }
 
     private void initViews(Context context, AttributeSet attrs, int defStyle){
@@ -136,6 +122,14 @@ public class StatedLayout extends RelativeLayout {
         }
     }
 
+    public void setRetryClickListener(OnRetryClickListener retryClickListener) {
+        this.retryClickListener = retryClickListener;
+    }
+
+    public int getState() {
+        return actualState;
+    }
+
     public void setState(int state){
         switch (state) {
             case STATE_EMPTY :
@@ -153,7 +147,6 @@ public class StatedLayout extends RelativeLayout {
             default:
                 break;
         }
-        invalidate();
     }
 
     private void setEmpty(){
@@ -181,6 +174,20 @@ public class StatedLayout extends RelativeLayout {
         text.setText(labelError);
         image.setImageResource(imageError);
         button.setText(R.string.retry);
+        button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (retryClickListener != null) {
+                    setState(STATE_LOADING);
+                    button.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            retryClickListener.onRetryClick();
+                        }
+                    }, 100);
+                }
+            }
+        });
         setVisible(text,true);
         setVisible(image,true);
         setVisible(button,true);
@@ -201,6 +208,10 @@ public class StatedLayout extends RelativeLayout {
         } else if (!view.isShown() && wanttosee) {
             view.setVisibility(View.VISIBLE);
         }
+    }
+
+    public interface OnRetryClickListener {
+        public void onRetryClick();
     }
 
 }

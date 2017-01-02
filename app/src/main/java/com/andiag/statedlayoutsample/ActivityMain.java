@@ -12,7 +12,7 @@ import com.andiag.statedlayout.StatedLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActivityMain extends AppCompatActivity {
+public class ActivityMain extends AppCompatActivity implements StatedLayout.OnRetryClickListener {
 
     RecyclerView recycler;
     AdapterContent adapter;
@@ -26,6 +26,7 @@ public class ActivityMain extends AppCompatActivity {
 
         recycler = (RecyclerView) findViewById(R.id.recycler);
         statedLayout = (StatedLayout) findViewById(R.id.statedLayout);
+        statedLayout.setRetryClickListener(this);
         bContent = (Button) findViewById(R.id.buttonContent);
         bError = (Button) findViewById(R.id.buttonError);
         bEmpty = (Button) findViewById(R.id.buttonEmpty);
@@ -36,7 +37,7 @@ public class ActivityMain extends AppCompatActivity {
 
         setClickListerners();
 
-        adapter.updateList(getSampleContent());
+        adapter.updateList(getSampleContent(50));
     }
 
     private void setClickListerners(){
@@ -66,11 +67,16 @@ public class ActivityMain extends AppCompatActivity {
         });
     }
 
-    private List<ItemContent> getSampleContent(){
+    private List<ItemContent> getSampleContent(int size) {
         List<ItemContent> result = new ArrayList<>();
-        for(int i = 0;i<50;i++){
+        for (int i = 0; i < size; i++) {
             result.add(new ItemContent(R.drawable.stated_empty_, "Item " + i));
         }
         return result;
+    }
+
+    @Override
+    public void onRetryClick() {
+        adapter.updateList(getSampleContent(100));
     }
 }
