@@ -1,6 +1,7 @@
 package com.andiag.statedlayoutsample;
 
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,6 +28,10 @@ public class ActivityMain extends AppCompatActivity implements StatedLayout.OnRe
         recycler = (RecyclerView) findViewById(R.id.recycler);
         statedLayout = (StatedLayout) findViewById(R.id.statedLayout);
         statedLayout.setRetryClickListener(this);
+        statedLayout.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        statedLayout.setTextSize(32);
+        statedLayout.setTintColor(ContextCompat.getColor(this, R.color.colorAccent));
+        statedLayout.setAlternateIcons(true);
         bContent = (Button) findViewById(R.id.buttonContent);
         bError = (Button) findViewById(R.id.buttonError);
         bEmpty = (Button) findViewById(R.id.buttonEmpty);

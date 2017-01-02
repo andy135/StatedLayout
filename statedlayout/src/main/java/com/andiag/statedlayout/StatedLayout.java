@@ -32,7 +32,7 @@ public class StatedLayout extends RelativeLayout {
     private TextView text;
     private Button button;
     private int textSize;
-    private int tintColor;
+    private int tintColor, textColor;
     private OnRetryClickListener retryClickListener;
     @StringRes
     private int labelEmpty, labelLoading, labelError;
@@ -77,17 +77,14 @@ public class StatedLayout extends RelativeLayout {
             alternateIcons = array.getBoolean(R.styleable.StatedLayout_alternateIcons, false);
 
             tintColor = array.getColor(R.styleable.StatedLayout_android_tint, getColor(context, R.attr.colorAccent));
+            textColor = array.getColor(R.styleable.StatedLayout_android_textColor, getColor(context, android.R.attr.textColorSecondary));
 
             textSize = array.getDimensionPixelSize(R.styleable.StatedLayout_android_textSize,18);
         } finally {
             array.recycle();
         }
 
-        if (alternateIcons) {
-            imageEmpty = R.drawable.stated_empty_;
-            imageLoading = R.drawable.stated_loading_;
-            imageError = R.drawable.stated_error_;
-        }
+        setAlternateIcons(alternateIcons);
 
         View view = LayoutInflater.from(context).inflate(R.layout.statedlayout_base, this);
 
@@ -95,6 +92,7 @@ public class StatedLayout extends RelativeLayout {
         image.setColorFilter(tintColor, PorterDuff.Mode.MULTIPLY);
         text = (TextView) view.findViewById(R.id.statelayout_text);
         text.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
+        text.setTextColor(textColor);
         button = (Button) view.findViewById(R.id.statelayout_button);
         content = (ViewGroup) view.findViewById(R.id.statedlayout_content);
     }
@@ -210,8 +208,32 @@ public class StatedLayout extends RelativeLayout {
         }
     }
 
+    public void setTextSize(int textSize) {
+        this.textSize = textSize;
+        text.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+    }
+
+    public void setTextColor(int textColor) {
+        this.textColor = textColor;
+        text.setTextColor(textColor);
+    }
+
+    public void setTintColor(int tintColor) {
+        this.tintColor = tintColor;
+        image.setColorFilter(tintColor, PorterDuff.Mode.MULTIPLY);
+    }
+
+    public void setAlternateIcons(boolean alternateIcons) {
+        this.alternateIcons = alternateIcons;
+        if (alternateIcons) {
+            this.imageEmpty = R.drawable.stated_empty_;
+            this.imageLoading = R.drawable.stated_loading_;
+            this.imageError = R.drawable.stated_error_;
+        }
+    }
+
     public interface OnRetryClickListener {
-        public void onRetryClick();
+        void onRetryClick();
     }
 
 }

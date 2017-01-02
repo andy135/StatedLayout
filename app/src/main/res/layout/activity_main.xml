@@ -60,7 +60,7 @@
         android:layout_below="@id/buttons"
         android:textSize="32sp"
         android:tint="@color/colorPrimary"
-        andiag:alternateIcons="true">
+        andiag:alternateIcons="false">
 
         <include layout="@layout/content" />
 
