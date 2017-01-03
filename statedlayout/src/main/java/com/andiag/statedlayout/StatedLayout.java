@@ -84,7 +84,7 @@ public class StatedLayout extends RelativeLayout {
             tintColor = array.getColor(R.styleable.StatedLayout_android_tint, getColor(context, R.attr.colorAccent));
             textColor = array.getColor(R.styleable.StatedLayout_android_textColor, getColor(context, android.R.attr.textColorSecondary));
 
-            textSize = array.getDimensionPixelSize(R.styleable.StatedLayout_android_textSize, 18);
+            textSize = array.getDimensionPixelSize(R.styleable.StatedLayout_android_textSize, 72);
         } finally {
             array.recycle();
         }
