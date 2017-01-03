@@ -13,7 +13,7 @@ import com.andiag.statedlayout.StatedLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActivityMain extends AppCompatActivity implements StatedLayout.StateCallbackListener {
+public class ActivityMain extends AppCompatActivity implements StatedLayout.OnRetryListener {
 
     RecyclerView recycler;
     AdapterContent adapter;
@@ -27,11 +27,13 @@ public class ActivityMain extends AppCompatActivity implements StatedLayout.Stat
 
         recycler = (RecyclerView) findViewById(R.id.recycler);
         statedLayout = (StatedLayout) findViewById(R.id.statedLayout);
-        statedLayout.setStateCallbackListener(this);
-//        statedLayout.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
-//        statedLayout.setTextSize(32);
-//        statedLayout.setTintColor(ContextCompat.getColor(this, R.color.colorAccent));
-//        statedLayout.setAlternateIcons(true);
+        statedLayout.setOnRetryListener(this);
+        statedLayout.setOnErrorCallback(new StatedLayout.OnErrorCallback() {
+            @Override
+            public void onError() {
+                Toast.makeText(ActivityMain.this, "Error loading data!", Toast.LENGTH_SHORT).show();
+            }
+        });
         bContent = (Button) findViewById(R.id.buttonContent);
         bError = (Button) findViewById(R.id.buttonError);
         bEmpty = (Button) findViewById(R.id.buttonEmpty);
@@ -84,25 +86,5 @@ public class ActivityMain extends AppCompatActivity implements StatedLayout.Stat
     public void onRetryClick() {
         Toast.makeText(this, "Retrying", Toast.LENGTH_SHORT).show();
         adapter.updateList(getSampleContent(100));
-    }
-
-    @Override
-    public void onStateLoading() {
-        Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onStateError() {
-        Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onStateContent() {
-        Toast.makeText(this, "Content", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onStateEmpty() {
-        Toast.makeText(this, "Empty", Toast.LENGTH_SHORT).show();
     }
 }

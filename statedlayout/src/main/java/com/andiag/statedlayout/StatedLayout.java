@@ -41,7 +41,11 @@ public class StatedLayout extends RelativeLayout {
     private boolean alternateIcons;
 
     //Callback
-    private StateCallbackListener stateCallbackListener;
+    private OnRetryListener onRetryListener;
+    private OnLoadingCallback onLoadingCallback;
+    private OnErrorCallback onErrorCallback;
+    private OnEmptyCallback onEmptyCallback;
+    private OnContentCallback onContentCallback;
 
     //region Constuctors
     public StatedLayout(Context context) {
@@ -102,12 +106,12 @@ public class StatedLayout extends RelativeLayout {
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (stateCallbackListener != null) {
+                if (onRetryListener != null) {
                     setLoading();
                     button.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            stateCallbackListener.onRetryClick();
+                            onRetryListener.onRetryClick();
                         }
                     }, 100);
                 }
@@ -220,8 +224,24 @@ public class StatedLayout extends RelativeLayout {
     //endregion
 
     //region Public Methods
-    public void setStateCallbackListener(StateCallbackListener stateCallbackListener) {
-        this.stateCallbackListener = stateCallbackListener;
+    public void setOnRetryListener(OnRetryListener onRetryListener) {
+        this.onRetryListener = onRetryListener;
+    }
+
+    public void setOnLoadingCallback(OnLoadingCallback onLoadingCallback) {
+        this.onLoadingCallback = onLoadingCallback;
+    }
+
+    public void setOnErrorCallback(OnErrorCallback onErrorCallback) {
+        this.onErrorCallback = onErrorCallback;
+    }
+
+    public void setOnEmptyCallback(OnEmptyCallback onEmptyCallback) {
+        this.onEmptyCallback = onEmptyCallback;
+    }
+
+    public void setOnContentCallback(OnContentCallback onContentCallback) {
+        this.onContentCallback = onContentCallback;
     }
 
     public int getState() {
@@ -255,34 +275,48 @@ public class StatedLayout extends RelativeLayout {
 
     //region Callbacks
     public void notifyCallbackListener() {
-        if (stateCallbackListener != null) {
-            switch (actualState) {
-                case STATE_EMPTY:
-                    stateCallbackListener.onStateEmpty();
-                    break;
-                case STATE_ERROR:
-                    stateCallbackListener.onStateError();
-                    break;
-                case STATE_LOADING:
-                    stateCallbackListener.onStateLoading();
-                    break;
-                case STATE_CONTENT:
-                    stateCallbackListener.onStateContent();
-                    break;
-            }
+        switch (actualState) {
+            case STATE_EMPTY:
+                if (onEmptyCallback != null) {
+                    onEmptyCallback.onEmpty();
+                }
+                break;
+            case STATE_ERROR:
+                if (onErrorCallback != null) {
+                    onErrorCallback.onError();
+                }
+                break;
+            case STATE_LOADING:
+                if (onLoadingCallback != null) {
+                    onLoadingCallback.onLoading();
+                }
+                break;
+            case STATE_CONTENT:
+                if (onContentCallback != null) {
+                    onContentCallback.onContent();
+                }
+                break;
         }
     }
 
-    public interface StateCallbackListener {
+    public interface OnRetryListener {
         void onRetryClick();
+    }
 
-        void onStateLoading();
+    public interface OnLoadingCallback {
+        void onLoading();
+    }
 
-        void onStateError();
+    public interface OnErrorCallback {
+        void onError();
+    }
 
-        void onStateContent();
+    public interface OnContentCallback {
+        void onContent();
+    }
 
-        void onStateEmpty();
+    public interface OnEmptyCallback {
+        void onEmpty();
     }
     //endregion
 
