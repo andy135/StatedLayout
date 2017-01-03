@@ -23,29 +23,25 @@ import android.widget.TextView;
 
 public class StatedLayout extends RelativeLayout {
     //States
-    public static final int STATE_CONTENT = 10, STATE_LOADING = 20, STATE_ERROR = 30, STATE_EMPTY = 40;
-    private int actualState = STATE_LOADING;
+    private State mActualState = State.STATE_LOADING;
 
     //Views
-    private ImageView image;
-    private TextView text;
-    private Button button;
-    private View content;
+    private ImageView mImageView;
+    private TextView mTextView;
+    private Button mButton;
+    private View mContent;
 
     //Customization
-    private int textSize, tintColor, textColor;
+    private int mTextSize, mTintColor, mTextColor;
     @StringRes
-    private int labelEmpty, labelLoading, labelError;
+    private int mLabelEmpty, mLabelLoading, mLabelError;
     @DrawableRes
-    private int imageEmpty, imageLoading, imageError;
-    private boolean alternateIcons;
+    private int mImageEmpty, mImageLoading, mImageError;
+    private boolean mAlternateIcons;
 
     //Callback
-    private OnRetryListener onRetryListener;
-    private OnLoadingCallback onLoadingCallback;
-    private OnErrorCallback onErrorCallback;
-    private OnEmptyCallback onEmptyCallback;
-    private OnContentCallback onContentCallback;
+    private OnRetryListener mOnRetryListener;
+    private OnStateChangeListener mOnStateChangeListener;
 
     //region Constuctors
     public StatedLayout(Context context) {
@@ -63,11 +59,25 @@ public class StatedLayout extends RelativeLayout {
         initViews(context, attrs, defStyleAttr);
     }
 
+    public StatedLayout(Context context, AttributeSet attrs, int defStyleAttr, OnStateChangeListener onStateChangeListener) {
+        super(context, attrs, defStyleAttr);
+        initViews(context, attrs, defStyleAttr);
+        this.mOnStateChangeListener = onStateChangeListener;
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public StatedLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         initViews(context, attrs, defStyleAttr);
     }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public StatedLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes, OnStateChangeListener onStateChangeListener) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        initViews(context, attrs, defStyleAttr);
+        this.mOnStateChangeListener = onStateChangeListener;
+    }
+
     //endregion
 
     //region Customization/FirstState
@@ -75,43 +85,43 @@ public class StatedLayout extends RelativeLayout {
         TypedArray array = context.getTheme().obtainStyledAttributes(attrs, R.styleable.StatedLayout, defStyle, 0);
 
         try {
-            labelEmpty = array.getResourceId(R.styleable.StatedLayout_emptyLabel, R.string.default_empty);
-            labelLoading = array.getResourceId(R.styleable.StatedLayout_loadingLabel, R.string.default_loading);
-            labelError = array.getResourceId(R.styleable.StatedLayout_errorLabel, R.string.default_error);
+            mLabelEmpty = array.getResourceId(R.styleable.StatedLayout_emptyLabel, R.string.default_empty);
+            mLabelLoading = array.getResourceId(R.styleable.StatedLayout_loadingLabel, R.string.default_loading);
+            mLabelError = array.getResourceId(R.styleable.StatedLayout_errorLabel, R.string.default_error);
 
-            imageEmpty = array.getResourceId(R.styleable.StatedLayout_emptyImage, R.drawable.stated_empty);
-            imageLoading = array.getResourceId(R.styleable.StatedLayout_loadingImage, R.drawable.stated_loading);
-            imageError = array.getResourceId(R.styleable.StatedLayout_errorImage, R.drawable.stated_error);
+            mImageEmpty = array.getResourceId(R.styleable.StatedLayout_emptyImage, R.drawable.stated_empty);
+            mImageLoading = array.getResourceId(R.styleable.StatedLayout_loadingImage, R.drawable.stated_loading);
+            mImageError = array.getResourceId(R.styleable.StatedLayout_errorImage, R.drawable.stated_error);
 
-            alternateIcons = array.getBoolean(R.styleable.StatedLayout_alternateIcons, false);
+            mAlternateIcons = array.getBoolean(R.styleable.StatedLayout_alternateIcons, false);
 
-            tintColor = array.getColor(R.styleable.StatedLayout_android_tint, getColor(context, R.attr.colorAccent));
-            textColor = array.getColor(R.styleable.StatedLayout_android_textColor, getColor(context, android.R.attr.textColorSecondary));
+            mTintColor = array.getColor(R.styleable.StatedLayout_android_tint, getColor(context, R.attr.colorAccent));
+            mTextColor = array.getColor(R.styleable.StatedLayout_android_textColor, getColor(context, android.R.attr.textColorSecondary));
 
-            textSize = array.getDimensionPixelSize(R.styleable.StatedLayout_android_textSize, 72);
+            mTextSize = array.getDimensionPixelSize(R.styleable.StatedLayout_android_textSize, 72);
         } finally {
             array.recycle();
         }
 
-        setAlternateIcons(alternateIcons);
+        setAlternateIcons(mAlternateIcons);
 
         View view = LayoutInflater.from(context).inflate(R.layout.statedlayout_base, this);
 
-        image = (ImageView) view.findViewById(R.id.statelayout_image);
-        image.setColorFilter(tintColor, PorterDuff.Mode.MULTIPLY);
-        text = (TextView) view.findViewById(R.id.statelayout_text);
-        text.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-        text.setTextColor(textColor);
-        button = (Button) view.findViewById(R.id.statelayout_button);
-        button.setOnClickListener(new OnClickListener() {
+        mImageView = (ImageView) view.findViewById(R.id.statelayout_image);
+        mImageView.setColorFilter(mTintColor, PorterDuff.Mode.MULTIPLY);
+        mTextView = (TextView) view.findViewById(R.id.statelayout_text);
+        mTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
+        mTextView.setTextColor(mTextColor);
+        mButton = (Button) view.findViewById(R.id.statelayout_button);
+        mButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (onRetryListener != null) {
+                if (mOnRetryListener != null) {
                     setLoading();
-                    button.postDelayed(new Runnable() {
+                    mButton.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            onRetryListener.onRetryClick();
+                            mOnRetryListener.onRetryClick();
                         }
                     }, 100);
                 }
@@ -139,7 +149,7 @@ public class StatedLayout extends RelativeLayout {
         if (getChildCount() > 1) {
             throw new IllegalStateException("StatedLayout cannot have more than 1 child");
         }
-        content = child;
+        mContent = child;
     }
 
     @Override
@@ -175,32 +185,32 @@ public class StatedLayout extends RelativeLayout {
 
     //region State Switching
     public void setEmpty() {
-        actualState = STATE_EMPTY;
-        text.setText(labelEmpty);
-        image.setImageResource(imageEmpty);
+        mActualState = State.STATE_EMPTY;
+        mTextView.setText(mLabelEmpty);
+        mImageView.setImageResource(mImageEmpty);
         updateVisibleState(true, true, false, false);
         notifyCallbackListener();
     }
 
     public void setLoading() {
-        actualState = STATE_LOADING;
-        text.setText(labelLoading);
-        image.setImageResource(imageLoading);
+        mActualState = State.STATE_LOADING;
+        mTextView.setText(mLabelLoading);
+        mImageView.setImageResource(mImageLoading);
         updateVisibleState(true, true, false, false);
         notifyCallbackListener();
     }
 
     public void setError() {
-        actualState = STATE_ERROR;
-        text.setText(labelError);
-        image.setImageResource(imageError);
-        button.setText(R.string.retry);
+        mActualState = State.STATE_ERROR;
+        mTextView.setText(mLabelError);
+        mImageView.setImageResource(mImageError);
+        mButton.setText(R.string.retry);
         updateVisibleState(true, true, true, false);
         notifyCallbackListener();
     }
 
     public void setContent() {
-        actualState = STATE_CONTENT;
+        mActualState = State.STATE_CONTENT;
         updateVisibleState(false, false, false, true);
         notifyCallbackListener();
     }
@@ -208,10 +218,10 @@ public class StatedLayout extends RelativeLayout {
 
     //region Visibility
     private void updateVisibleState(boolean txt, boolean img, boolean btn, boolean cnt) {
-        setVisible(text, txt);
-        setVisible(image, img);
-        setVisible(button, btn);
-        setVisible(content, cnt);
+        setVisible(mTextView, txt);
+        setVisible(mImageView, img);
+        setVisible(mButton, btn);
+        setVisible(mContent, cnt);
     }
 
     private void setVisible(View view, boolean wanttosee) {
@@ -225,98 +235,66 @@ public class StatedLayout extends RelativeLayout {
 
     //region Public Methods
     public void setOnRetryListener(OnRetryListener onRetryListener) {
-        this.onRetryListener = onRetryListener;
+        this.mOnRetryListener = onRetryListener;
     }
 
-    public void setOnLoadingCallback(OnLoadingCallback onLoadingCallback) {
-        this.onLoadingCallback = onLoadingCallback;
+    public void setOnStateChangeListener(OnStateChangeListener onStateChangeListener) {
+        this.mOnStateChangeListener = onStateChangeListener;
     }
 
-    public void setOnErrorCallback(OnErrorCallback onErrorCallback) {
-        this.onErrorCallback = onErrorCallback;
-    }
-
-    public void setOnEmptyCallback(OnEmptyCallback onEmptyCallback) {
-        this.onEmptyCallback = onEmptyCallback;
-    }
-
-    public void setOnContentCallback(OnContentCallback onContentCallback) {
-        this.onContentCallback = onContentCallback;
-    }
-
-    public int getState() {
-        return actualState;
+    public State getState() {
+        return mActualState;
     }
 
     public void setTextSize(int textSize) {
-        this.textSize = textSize;
-        text.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+        this.mTextSize = textSize;
+        mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
     }
 
     public void setTextColor(int textColor) {
-        this.textColor = textColor;
-        text.setTextColor(textColor);
+        this.mTextColor = textColor;
+        mTextView.setTextColor(textColor);
     }
 
     public void setTintColor(int tintColor) {
-        this.tintColor = tintColor;
-        image.setColorFilter(tintColor, PorterDuff.Mode.MULTIPLY);
+        this.mTintColor = tintColor;
+        mImageView.setColorFilter(tintColor, PorterDuff.Mode.MULTIPLY);
     }
 
     public void setAlternateIcons(boolean alternateIcons) {
-        this.alternateIcons = alternateIcons;
+        this.mAlternateIcons = alternateIcons;
         if (alternateIcons) {
-            this.imageEmpty = R.drawable.stated_empty_;
-            this.imageLoading = R.drawable.stated_loading_;
-            this.imageError = R.drawable.stated_error_;
+            this.mImageEmpty = R.drawable.stated_empty_;
+            this.mImageLoading = R.drawable.stated_loading_;
+            this.mImageError = R.drawable.stated_error_;
         }
     }
     //endregion
 
     //region Callbacks
     public void notifyCallbackListener() {
-        switch (actualState) {
+        switch (mActualState) {
             case STATE_EMPTY:
-                if (onEmptyCallback != null) {
-                    onEmptyCallback.onEmpty();
+                if (mOnStateChangeListener != null) {
+                    mOnStateChangeListener.onEmpty();
                 }
                 break;
             case STATE_ERROR:
-                if (onErrorCallback != null) {
-                    onErrorCallback.onError();
+                if (mOnStateChangeListener != null) {
+                    mOnStateChangeListener.onError();
                 }
                 break;
             case STATE_LOADING:
-                if (onLoadingCallback != null) {
-                    onLoadingCallback.onLoading();
+                if (mOnStateChangeListener != null) {
+                    mOnStateChangeListener.onLoading();
                 }
                 break;
             case STATE_CONTENT:
-                if (onContentCallback != null) {
-                    onContentCallback.onContent();
+                if (mOnStateChangeListener != null) {
+                    mOnStateChangeListener.onContent();
                 }
                 break;
         }
-    }
-
-    public interface OnRetryListener {
-        void onRetryClick();
-    }
-
-    public interface OnLoadingCallback {
-        void onLoading();
-    }
-
-    public interface OnErrorCallback {
-        void onError();
-    }
-
-    public interface OnContentCallback {
-        void onContent();
-    }
-
-    public interface OnEmptyCallback {
-        void onEmpty();
     }
     //endregion
 

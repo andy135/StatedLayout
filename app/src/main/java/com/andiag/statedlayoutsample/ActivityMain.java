@@ -8,12 +8,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.andiag.statedlayout.OnRetryListener;
 import com.andiag.statedlayout.StatedLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActivityMain extends AppCompatActivity implements StatedLayout.OnRetryListener {
+public class ActivityMain extends AppCompatActivity implements OnRetryListener {
 
     RecyclerView recycler;
     AdapterContent adapter;
