@@ -7,13 +7,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.andiag.statedlayout.StatedLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActivityMain extends AppCompatActivity implements StatedLayout.OnRetryClickListener {
+public class ActivityMain extends AppCompatActivity implements StatedLayout.StateCallbackListener {
 
     RecyclerView recycler;
     AdapterContent adapter;
@@ -27,7 +28,7 @@ public class ActivityMain extends AppCompatActivity implements StatedLayout.OnRe
 
         recycler = (RecyclerView) findViewById(R.id.recycler);
         statedLayout = (StatedLayout) findViewById(R.id.statedLayout);
-        statedLayout.setRetryClickListener(this);
+        statedLayout.setStateCallbackListener(this);
         statedLayout.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
         statedLayout.setTextSize(32);
         statedLayout.setTintColor(ContextCompat.getColor(this, R.color.colorAccent));
@@ -49,25 +50,25 @@ public class ActivityMain extends AppCompatActivity implements StatedLayout.OnRe
         bContent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                statedLayout.setState(StatedLayout.STATE_CONTENT);
+                statedLayout.setContent();
             }
         });
         bLoading.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                statedLayout.setState(StatedLayout.STATE_LOADING);
+                statedLayout.setLoading();
             }
         });
         bEmpty.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                statedLayout.setState(StatedLayout.STATE_EMPTY);
+                statedLayout.setEmpty();
             }
         });
         bError.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                statedLayout.setState(StatedLayout.STATE_ERROR);
+                statedLayout.setError();
             }
         });
     }
@@ -82,6 +83,27 @@ public class ActivityMain extends AppCompatActivity implements StatedLayout.OnRe
 
     @Override
     public void onRetryClick() {
+        Toast.makeText(this, "Retrying", Toast.LENGTH_SHORT).show();
         adapter.updateList(getSampleContent(100));
+    }
+
+    @Override
+    public void onStateLoading() {
+        Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStateError() {
+        Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStateContent() {
+        Toast.makeText(this, "Content", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStateEmpty() {
+        Toast.makeText(this, "Empty", Toast.LENGTH_SHORT).show();
     }
 }

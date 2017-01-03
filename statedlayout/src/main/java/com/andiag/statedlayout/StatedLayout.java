@@ -22,53 +22,58 @@ import android.widget.TextView;
  */
 
 public class StatedLayout extends RelativeLayout {
-
-    public static final int STATE_CONTENT  = 10;
-    public static final int STATE_LOADING  = 20;
-    public static final int STATE_ERROR    = 30;
-    public static final int STATE_EMPTY    = 40;
+    //States
+    public static final int STATE_CONTENT = 10, STATE_LOADING = 20, STATE_ERROR = 30, STATE_EMPTY = 40;
     private int actualState = STATE_LOADING;
+
+    //Views
     private ImageView image;
     private TextView text;
     private Button button;
-    private int textSize;
-    private int tintColor, textColor;
-    private OnRetryClickListener retryClickListener;
+    private View content;
+
+    //Customization
+    private int textSize, tintColor, textColor;
     @StringRes
     private int labelEmpty, labelLoading, labelError;
     @DrawableRes
     private int imageEmpty, imageLoading, imageError;
     private boolean alternateIcons;
-    private ViewGroup content;
 
+    //Callback
+    private StateCallbackListener stateCallbackListener;
+
+    //region Constuctors
     public StatedLayout(Context context) {
         super(context);
-        initViews(context,null,0);
+        initViews(context, null, 0);
     }
 
     public StatedLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initViews(context,attrs,0);
+        initViews(context, attrs, 0);
     }
 
     public StatedLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initViews(context,attrs,defStyleAttr);
+        initViews(context, attrs, defStyleAttr);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public StatedLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        initViews(context,attrs,defStyleAttr);
+        initViews(context, attrs, defStyleAttr);
     }
+    //endregion
 
-    private void initViews(Context context, AttributeSet attrs, int defStyle){
-        TypedArray array = context.getTheme().obtainStyledAttributes(attrs,R.styleable.StatedLayout,defStyle,0);
+    //region Customization/FirstState
+    private void initViews(Context context, AttributeSet attrs, int defStyle) {
+        TypedArray array = context.getTheme().obtainStyledAttributes(attrs, R.styleable.StatedLayout, defStyle, 0);
 
         try {
-            labelEmpty = array.getResourceId(R.styleable.StatedLayout_emptyLabel,R.string.default_empty);
-            labelLoading = array.getResourceId(R.styleable.StatedLayout_loadingLabel,R.string.default_loading);
-            labelError = array.getResourceId(R.styleable.StatedLayout_errorLabel,R.string.default_error);
+            labelEmpty = array.getResourceId(R.styleable.StatedLayout_emptyLabel, R.string.default_empty);
+            labelLoading = array.getResourceId(R.styleable.StatedLayout_loadingLabel, R.string.default_loading);
+            labelError = array.getResourceId(R.styleable.StatedLayout_errorLabel, R.string.default_error);
 
             imageEmpty = array.getResourceId(R.styleable.StatedLayout_emptyImage, R.drawable.stated_empty);
             imageLoading = array.getResourceId(R.styleable.StatedLayout_loadingImage, R.drawable.stated_loading);
@@ -79,7 +84,7 @@ public class StatedLayout extends RelativeLayout {
             tintColor = array.getColor(R.styleable.StatedLayout_android_tint, getColor(context, R.attr.colorAccent));
             textColor = array.getColor(R.styleable.StatedLayout_android_textColor, getColor(context, android.R.attr.textColorSecondary));
 
-            textSize = array.getDimensionPixelSize(R.styleable.StatedLayout_android_textSize,18);
+            textSize = array.getDimensionPixelSize(R.styleable.StatedLayout_android_textSize, 18);
         } finally {
             array.recycle();
         }
@@ -91,10 +96,23 @@ public class StatedLayout extends RelativeLayout {
         image = (ImageView) view.findViewById(R.id.statelayout_image);
         image.setColorFilter(tintColor, PorterDuff.Mode.MULTIPLY);
         text = (TextView) view.findViewById(R.id.statelayout_text);
-        text.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
+        text.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
         text.setTextColor(textColor);
         button = (Button) view.findViewById(R.id.statelayout_button);
-        content = (ViewGroup) view.findViewById(R.id.statedlayout_content);
+        button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (stateCallbackListener != null) {
+                    setLoading();
+                    button.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            stateCallbackListener.onRetryClick();
+                        }
+                    }, 100);
+                }
+            }
+        });
     }
 
     private int getColor(Context context, int colorAttr) {
@@ -108,104 +126,106 @@ public class StatedLayout extends RelativeLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        setState(actualState);
+        setLoading();
+    }
+    //endregion
+
+    //region Add Child Override
+    private void allowOnlyOneChild(View child) {
+        if (getChildCount() > 1) {
+            throw new IllegalStateException("StatedLayout cannot have more than 1 child");
+        }
+        content = child;
+    }
+
+    @Override
+    public void addView(View child) {
+        allowOnlyOneChild(child);
+        super.addView(child);
+    }
+
+    @Override
+    public void addView(View child, int index) {
+        allowOnlyOneChild(child);
+        super.addView(child, index);
     }
 
     @Override
     public void addView(View child, int index, ViewGroup.LayoutParams params) {
-        if (content == null){
-            super.addView(child,index,params);
-        } else {
-             content.addView(child, index, params);
-        }
+        allowOnlyOneChild(child);
+        super.addView(child, index, params);
     }
 
-    public void setRetryClickListener(OnRetryClickListener retryClickListener) {
-        this.retryClickListener = retryClickListener;
+    @Override
+    public void addView(View child, ViewGroup.LayoutParams params) {
+        allowOnlyOneChild(child);
+        super.addView(child, params);
     }
 
-    public int getState() {
-        return actualState;
+    @Override
+    public void addView(View child, int width, int height) {
+        allowOnlyOneChild(child);
+        super.addView(child, width, height);
     }
+    //endregion
 
-    public void setState(int state){
-        switch (state) {
-            case STATE_EMPTY :
-                setEmpty();
-                break;
-            case STATE_ERROR :
-                setError();
-                break;
-            case STATE_LOADING :
-                setLoading();
-                break;
-            case STATE_CONTENT :
-                setContent();
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void setEmpty(){
+    //region State Switching
+    public void setEmpty() {
         actualState = STATE_EMPTY;
         text.setText(labelEmpty);
         image.setImageResource(imageEmpty);
-        setVisible(text,true);
-        setVisible(image,true);
-        setVisible(button,false);
-        setVisible(content,false);
+        updateVisibleState(true, true, false, false);
+        notifyCallbackListener();
     }
 
-    private void setLoading(){
+    public void setLoading() {
         actualState = STATE_LOADING;
         text.setText(labelLoading);
         image.setImageResource(imageLoading);
-        setVisible(text,true);
-        setVisible(image,true);
-        setVisible(button,false);
-        setVisible(content,false);
+        updateVisibleState(true, true, false, false);
+        notifyCallbackListener();
     }
 
-    private void setError(){
+    public void setError() {
         actualState = STATE_ERROR;
         text.setText(labelError);
         image.setImageResource(imageError);
         button.setText(R.string.retry);
-        button.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (retryClickListener != null) {
-                    setState(STATE_LOADING);
-                    button.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            retryClickListener.onRetryClick();
-                        }
-                    }, 100);
-                }
-            }
-        });
-        setVisible(text,true);
-        setVisible(image,true);
-        setVisible(button,true);
-        setVisible(content,false);
+        updateVisibleState(true, true, true, false);
+        notifyCallbackListener();
     }
 
-    private void setContent(){
+    public void setContent() {
         actualState = STATE_CONTENT;
-        setVisible(text,false);
-        setVisible(image,false);
-        setVisible(button,false);
-        setVisible(content,true);
+        updateVisibleState(false, false, false, true);
+        notifyCallbackListener();
+    }
+    //endregion
+
+    //region Visibility
+    private void updateVisibleState(boolean txt, boolean img, boolean btn, boolean cnt) {
+        setVisible(text, txt);
+        setVisible(image, img);
+        setVisible(button, btn);
+        setVisible(content, cnt);
     }
 
-    private void setVisible(View view, boolean wanttosee){
-        if (view.isShown() && !wanttosee){
+    private void setVisible(View view, boolean wanttosee) {
+        if (view.isShown() && !wanttosee) {
             view.setVisibility(View.GONE);
         } else if (!view.isShown() && wanttosee) {
             view.setVisibility(View.VISIBLE);
         }
+    }
+    //endregion
+
+    //region Public Methods
+    public void setStateCallbackListener(StateCallbackListener stateCallbackListener) {
+        this.stateCallbackListener = stateCallbackListener;
+    }
+
+    public int getState() {
+        return actualState;
     }
 
     public void setTextSize(int textSize) {
@@ -231,9 +251,39 @@ public class StatedLayout extends RelativeLayout {
             this.imageError = R.drawable.stated_error_;
         }
     }
+    //endregion
 
-    public interface OnRetryClickListener {
-        void onRetryClick();
+    //region Callbacks
+    public void notifyCallbackListener() {
+        if (stateCallbackListener != null) {
+            switch (actualState) {
+                case STATE_EMPTY:
+                    stateCallbackListener.onStateEmpty();
+                    break;
+                case STATE_ERROR:
+                    stateCallbackListener.onStateError();
+                    break;
+                case STATE_LOADING:
+                    stateCallbackListener.onStateLoading();
+                    break;
+                case STATE_CONTENT:
+                    stateCallbackListener.onStateContent();
+                    break;
+            }
+        }
     }
+
+    public interface StateCallbackListener {
+        void onRetryClick();
+
+        void onStateLoading();
+
+        void onStateError();
+
+        void onStateContent();
+
+        void onStateEmpty();
+    }
+    //endregion
 
 }
