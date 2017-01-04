@@ -8,17 +8,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.andiag.statedlayout.OnRetryListener;
+import com.andiag.statedlayout.OnStateChangeListener;
 import com.andiag.statedlayout.StatedLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActivityMain extends AppCompatActivity implements StatedLayout.OnRetryListener {
+public class ActivityMain extends AppCompatActivity implements OnRetryListener {
 
     RecyclerView recycler;
     AdapterContent adapter;
     StatedLayout statedLayout;
-    Button bLoading,bEmpty,bError,bContent;
+    Button bLoading, bEmpty, bError, bContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,17 +30,32 @@ public class ActivityMain extends AppCompatActivity implements StatedLayout.OnRe
         recycler = (RecyclerView) findViewById(R.id.recycler);
         statedLayout = (StatedLayout) findViewById(R.id.statedLayout);
         statedLayout.setOnRetryListener(this);
-        statedLayout.setOnErrorCallback(new StatedLayout.OnErrorCallback() {
+        statedLayout.setOnStateChangeListener(new OnStateChangeListener() {
+            @Override
+            public void onLoading() {
+
+            }
+
             @Override
             public void onError() {
                 Toast.makeText(ActivityMain.this, "Error loading data!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onContent() {
+
+            }
+
+            @Override
+            public void onEmpty() {
+
             }
         });
         bContent = (Button) findViewById(R.id.buttonContent);
         bError = (Button) findViewById(R.id.buttonError);
         bEmpty = (Button) findViewById(R.id.buttonEmpty);
         bLoading = (Button) findViewById(R.id.buttonLoading);
-        adapter = new AdapterContent(this,new ArrayList<ItemContent>());
+        adapter = new AdapterContent(this, new ArrayList<ItemContent>());
         recycler.setLayoutManager(new LinearLayoutManager(this));
         recycler.setAdapter(adapter);
 
@@ -47,7 +64,7 @@ public class ActivityMain extends AppCompatActivity implements StatedLayout.OnRe
         adapter.updateList(getSampleContent(50));
     }
 
-    private void setClickListerners(){
+    private void setClickListerners() {
         bContent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
