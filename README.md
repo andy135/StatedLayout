@@ -1,14 +1,15 @@
 # StatedLayout
 
+[![](https://jitpack.io/v/andy135/StatedLayout.svg)](https://jitpack.io/#andy135/StatedLayout)
+
 ## Description
 StatedLayout is a simple library for Android to easily manage states (**Loading**, **Error**, **Empty** and **Content**) when obtaining remote data.
 
 ##Screenshots
-![](https://github.com/andy135/StatedLayout/blob/master/screenshots/Loading.png)
-![](https://github.com/andy135/StatedLayout/blob/master/screenshots/Error.png)
-![](https://github.com/andy135/StatedLayout/blob/master/screenshots/Empty.png)
-![](https://github.com/andy135/StatedLayout/blob/master/screenshots/Content.png)
-
+<img src="https://github.com/andy135/StatedLayout/blob/master/screenshots/Loading.png" width="400"/>
+<img src="https://github.com/andy135/StatedLayout/blob/master/screenshots/Error.png" width="400"/>
+<img src="https://github.com/andy135/StatedLayout/blob/master/screenshots/Empty.png" width="400"/>
+<img src="https://github.com/andy135/StatedLayout/blob/master/screenshots/Content.png" width="400"/>
 
 ## Usage
 
