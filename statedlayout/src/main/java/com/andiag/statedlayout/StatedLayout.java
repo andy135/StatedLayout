@@ -33,7 +33,8 @@ public class StatedLayout extends RelativeLayout {
     private View mContent;
 
     //Customization
-    private int mTextSize, mTintColor, mTextColor, mImageSize;
+    private int mTintColor, mTextColor, mImageSize;
+    private float mTextSize;
     @StringRes
     private int mLabelEmpty, mLabelLoading, mLabelError;
     @DrawableRes
@@ -100,8 +101,8 @@ public class StatedLayout extends RelativeLayout {
             mTintColor = array.getColor(R.styleable.StatedLayout_android_tint, getColor(context, R.attr.colorAccent));
             mTextColor = array.getColor(R.styleable.StatedLayout_android_textColor, getColor(context, android.R.attr.textColorSecondary));
 
-            mTextSize = array.getDimensionPixelSize(R.styleable.StatedLayout_android_textSize, 64);
-            mImageSize = array.getDimensionPixelSize(R.styleable.StatedLayout_imageSize, 350);
+            mTextSize = array.getDimension(R.styleable.StatedLayout_android_textSize, 18);
+            mImageSize = array.getDimensionPixelSize(R.styleable.StatedLayout_imageSize, 0);
         } finally {
             array.recycle();
         }
@@ -112,12 +113,14 @@ public class StatedLayout extends RelativeLayout {
 
         mImageView = (ImageView) view.findViewById(R.id.statelayout_image);
         mImageView.setColorFilter(mTintColor, PorterDuff.Mode.MULTIPLY);
-        LayoutParams layoutParams = (LayoutParams) mImageView.getLayoutParams();
-        layoutParams.width = mImageSize;
-        layoutParams.height = mImageSize;
-        mImageView.setLayoutParams(layoutParams);
+        if (mImageSize != 0) {
+            LayoutParams layoutParams = (LayoutParams) mImageView.getLayoutParams();
+            layoutParams.width = mImageSize;
+            layoutParams.height = mImageSize;
+            mImageView.setLayoutParams(layoutParams);
+        }
         mTextView = (TextView) view.findViewById(R.id.statelayout_text);
-        mTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
+        mTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, mTextSize);
         mTextView.setTextColor(mTextColor);
         mButton = (Button) view.findViewById(R.id.statelayout_button);
         mButton.setOnClickListener(new OnClickListener() {
