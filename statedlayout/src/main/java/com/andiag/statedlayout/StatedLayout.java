@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.os.Build;
+import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.util.AttributeSet;
@@ -32,7 +33,7 @@ public class StatedLayout extends RelativeLayout {
     private View mContent;
 
     //Customization
-    private int mTextSize, mTintColor, mTextColor;
+    private int mTextSize, mTintColor, mTextColor, mImageSize;
     @StringRes
     private int mLabelEmpty, mLabelLoading, mLabelError;
     @DrawableRes
@@ -82,6 +83,7 @@ public class StatedLayout extends RelativeLayout {
 
     //region Customization/FirstState
     private void initViews(Context context, AttributeSet attrs, int defStyle) {
+        setSaveEnabled(true);
         TypedArray array = context.getTheme().obtainStyledAttributes(attrs, R.styleable.StatedLayout, defStyle, 0);
 
         try {
@@ -98,7 +100,8 @@ public class StatedLayout extends RelativeLayout {
             mTintColor = array.getColor(R.styleable.StatedLayout_android_tint, getColor(context, R.attr.colorAccent));
             mTextColor = array.getColor(R.styleable.StatedLayout_android_textColor, getColor(context, android.R.attr.textColorSecondary));
 
-            mTextSize = array.getDimensionPixelSize(R.styleable.StatedLayout_android_textSize, 72);
+            mTextSize = array.getDimensionPixelSize(R.styleable.StatedLayout_android_textSize, 64);
+            mImageSize = array.getDimensionPixelSize(R.styleable.StatedLayout_imageSize, 350);
         } finally {
             array.recycle();
         }
@@ -109,6 +112,10 @@ public class StatedLayout extends RelativeLayout {
 
         mImageView = (ImageView) view.findViewById(R.id.statelayout_image);
         mImageView.setColorFilter(mTintColor, PorterDuff.Mode.MULTIPLY);
+        LayoutParams layoutParams = (LayoutParams) mImageView.getLayoutParams();
+        layoutParams.width = mImageSize;
+        layoutParams.height = mImageSize;
+        mImageView.setLayoutParams(layoutParams);
         mTextView = (TextView) view.findViewById(R.id.statelayout_text);
         mTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
         mTextView.setTextColor(mTextColor);
@@ -140,7 +147,7 @@ public class StatedLayout extends RelativeLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        setLoading();
+        recoverState();
     }
     //endregion
 
@@ -213,6 +220,23 @@ public class StatedLayout extends RelativeLayout {
         mActualState = State.STATE_CONTENT;
         updateVisibleState(false, false, false, true);
         notifyCallbackListener();
+    }
+
+    private void recoverState() {
+        switch (mActualState) {
+            case STATE_EMPTY:
+                setEmpty();
+                break;
+            case STATE_ERROR:
+                setError();
+                break;
+            case STATE_LOADING:
+                setLoading();
+                break;
+            case STATE_CONTENT:
+                setContent();
+                break;
+        }
     }
     //endregion
 
@@ -297,5 +321,22 @@ public class StatedLayout extends RelativeLayout {
         }
     }
     //endregion
+
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState ss = new SavedState(superState);
+        ss.value = mActualState.toString();
+        return ss;
+    }
+
+    @Override
+    public void onRestoreInstanceState(Parcelable state) {
+        SavedState ss = (SavedState) state;
+        super.onRestoreInstanceState(ss.getSuperState());
+        mActualState = State.valueOf(ss.value);
+        recoverState();
+    }
 
 }

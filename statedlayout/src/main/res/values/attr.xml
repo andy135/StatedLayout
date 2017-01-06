@@ -10,9 +10,9 @@
         <attr name="errorImage" format="reference"/>
 
         <attr name="alternateIcons" format="boolean" />
+        <attr name="imageSize" format="dimension" />
 
         <attr name="android:tint" />
-        
         <attr name="android:textSize"/>
         <attr name="android:textColor" />
     </declare-styleable>
