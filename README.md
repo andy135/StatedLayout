@@ -17,7 +17,7 @@ StatedLayout is a simple library for Android to easily manage states (**Loading*
 
 Add this lines your root gradle project:
 
-```groovy
+```gradle
 allprojects {
 	repositories {
 		maven { url 'https://jitpack.io' }
@@ -27,13 +27,13 @@ allprojects {
 
 Include the following dependency in your *app* gradle module:
 
-```groovy
+```gradle
 	compile 'com.github.andy135:StatedLayout:1.0.0'
 ```
 
 ###2: Add the view to your layout xml file:
 
-```groovy
+```xml
     <com.andiag.statedlayout.StatedLayout
         android:id="@+id/statedLayout"
         android:layout_width="match_parent"
@@ -48,58 +48,47 @@ Include the following dependency in your *app* gradle module:
 
 The StatedLayout can have only one directly child, the content layout.
 
-###3: The activity of fragment implements StatedLayout.OnRetryListener:
+###3: The activity or fragment should implement [OnRetryListener](statedlayout/src/main/java/com/andiag/statedlayout/OnRetryListener.java):
 
-```groovy
+```java
 public class ActivityMain extends AppCompatActivity implements OnRetryListener {
 
-    RecyclerView recycler;
-    AdapterContent adapter;
     StatedLayout statedLayout;
-    Button bLoading, bEmpty, bError, bContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        recycler = (RecyclerView) findViewById(R.id.recycler);
+	
         statedLayout = (StatedLayout) findViewById(R.id.statedLayout);
         statedLayout.setOnRetryListener(this);
-        statedLayout.setOnStateChangeListener(new OnStateChangeListener() {
-            @Override
-            public void onLoading() {
-
-            }
-
-            @Override
-            public void onError() {
-                Toast.makeText(ActivityMain.this, "Error loading data!", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onContent() {
-
-            }
-
-            @Override
-            public void onEmpty() {
-
-            }
-        });
-        bContent = (Button) findViewById(R.id.buttonContent);
-        bError = (Button) findViewById(R.id.buttonError);
-        bEmpty = (Button) findViewById(R.id.buttonEmpty);
-        bLoading = (Button) findViewById(R.id.buttonLoading);
-        adapter = new AdapterContent(this, new ArrayList<ItemContent>());
-        recycler.setLayoutManager(new LinearLayoutManager(this));
-        recycler.setAdapter(adapter);
-
-        setClickListerners();
-
-        adapter.updateList(getSampleContent(50));
     }
 }
+```
+
+###4: You can also add a [OnStateChangeListener](statedlayout/src/main/java/com/andiag/statedlayout/OnStateChangeListener.java):
+```java
+	statedLayout.setOnStateChangeListener(new OnStateChangeListener() {
+	    @Override
+	    public void onLoading() {
+
+	    }
+
+	    @Override
+	    public void onError() {
+		Toast.makeText(ActivityMain.this, "Error loading data!", Toast.LENGTH_SHORT).show();
+	    }
+
+	    @Override
+	    public void onContent() {
+
+	    }
+
+	    @Override
+	    public void onEmpty() {
+
+	    }
+	});
 ```
 
 See more in the example app code.
